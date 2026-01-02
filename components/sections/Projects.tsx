@@ -2,7 +2,8 @@
 
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Github, ExternalLink, ArrowRight } from "lucide-react";
-import { projects, Project } from "@/data/projects";
+import { projects } from "@/data/projects";
+import type { Project } from "@/data/projects";
 import { useState, useRef } from "react";
 import { getTechIcon } from "@/data/techIcons";
 

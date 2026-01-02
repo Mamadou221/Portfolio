@@ -252,3 +252,4 @@ const coreStack = [
 
 **🎉 La section Compétences est maintenant optimisée pour impressionner les recruteurs GitHub et startups !**
 
+

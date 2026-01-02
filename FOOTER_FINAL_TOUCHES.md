@@ -275,3 +275,4 @@ Le footer est maintenant **ultra-premium** avec :
 
 **🎯 Le footer laisse maintenant une impression premium et cohérente avec toute la page !**
 
+

@@ -352,3 +352,4 @@ Le header est maintenant **ultra-optimisé** pour :
 
 **🎯 Le header renforce maintenant la crédibilité et la fluidité globale du portfolio de manière significative !**
 
+

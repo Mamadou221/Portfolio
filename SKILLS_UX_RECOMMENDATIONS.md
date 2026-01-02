@@ -194,3 +194,4 @@ La section **Compétences** a été transformée en une expérience visuelle, in
 
 **🎉 La section Compétences est maintenant prête à impressionner les recruteurs !**
 
+

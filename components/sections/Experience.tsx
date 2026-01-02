@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Calendar, MapPin, CheckCircle2 } from "lucide-react";
-import { experiences, Experience } from "@/data/experience";
+import { experiences } from "@/data/experience";
+import type { Experience } from "@/data/experience";
 import { companyLogos, experienceKeywords } from "@/data/companyLogos";
 import Image from "next/image";
 import { useState } from "react";

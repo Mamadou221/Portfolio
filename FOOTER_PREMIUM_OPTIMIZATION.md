@@ -332,3 +332,4 @@ Le footer est maintenant **ultra-optimisé** pour :
 
 **🎯 Le footer conclut maintenant le portfolio avec une impression positive, professionnelle et mémorable !**
 
+

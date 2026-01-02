@@ -192,3 +192,4 @@ export const techIconsMap: Record<string, TechIcon> = {
 - Si temps faible → Rendre plus accrocheur
 - Si abandon → Simplifier encore plus
 
+
