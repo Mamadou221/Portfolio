@@ -1,14 +1,18 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowDown, Code, Zap, Target, Download } from "lucide-react";
+import { ArrowDown, ArrowRight, Download, Sparkles, CheckCircle2, TrendingUp, Briefcase } from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
-const highlights = [
-  { icon: Code, text: "Solutions web modernes" },
-  { icon: Zap, text: "Performance optimisée" },
-  { icon: Target, text: "Orienté produit" },
+// Stack technique (micro-valeur)
+const techStack = ["React", "Next.js", "Node.js", "TypeScript"];
+
+// Proof points pour recruteurs (éléments de crédibilité)
+const proofPoints = [
+  { icon: Briefcase, text: "4+ ans IT terrain", color: "text-blue-600", bg: "bg-blue-50" },
+  { icon: TrendingUp, text: "Stack moderne", color: "text-green-600", bg: "bg-green-50" },
+  { icon: CheckCircle2, text: "Disponible", color: "text-primary-600", bg: "bg-primary-50" },
 ];
 
 export default function Hero() {
@@ -17,8 +21,8 @@ export default function Hero() {
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({
-        x: (e.clientX / window.innerWidth - 0.5) * 20,
-        y: (e.clientY / window.innerHeight - 0.5) * 20,
+        x: (e.clientX / window.innerWidth - 0.5) * 30,
+        y: (e.clientY / window.innerHeight - 0.5) * 30,
       });
     };
 
@@ -33,151 +37,249 @@ export default function Hero() {
     }
   };
 
+  const scrollToContact = () => {
+    const element = document.querySelector("#contact");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  // Variantes d'animation pour le texte
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.12,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.7,
+        ease: [0.2, 0.8, 0.2, 1],
+      },
+    },
+  };
+
   return (
     <section
       id="hero"
-      className="min-h-[85vh] flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-white via-primary-50 to-white pt-20"
+      className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-white via-primary-50/40 to-white pt-20"
     >
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
+      {/* Animated background elements - Renforcés */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Blobs animés */}
         <motion.div
-          className="absolute top-20 left-10 w-72 h-72 bg-primary-200 rounded-full blur-3xl opacity-20"
+          className="absolute top-10 sm:top-20 left-5 sm:left-10 w-64 h-64 sm:w-96 sm:h-96 bg-primary-200 rounded-full blur-3xl opacity-25"
           animate={{
             x: mousePosition.x,
             y: mousePosition.y,
+            scale: [1, 1.2, 1],
           }}
           transition={{ type: "spring", stiffness: 50, damping: 20 }}
         />
         <motion.div
-          className="absolute bottom-20 right-10 w-96 h-96 bg-primary-300 rounded-full blur-3xl opacity-20"
+          className="absolute bottom-10 sm:bottom-20 right-5 sm:right-10 w-80 h-80 sm:w-[500px] sm:h-[500px] bg-primary-300 rounded-full blur-3xl opacity-25"
           animate={{
             x: -mousePosition.x * 0.5,
             y: -mousePosition.y * 0.5,
+            scale: [1, 1.3, 1],
           }}
           transition={{ type: "spring", stiffness: 50, damping: 20 }}
         />
+        
+        {/* Particules subtiles */}
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-primary-400 rounded-full opacity-20"
+            style={{
+              left: `${20 + i * 15}%`,
+              top: `${30 + (i % 3) * 20}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{
+              duration: 3 + i * 0.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: i * 0.3,
+            }}
+          />
+        ))}
       </div>
 
       <div className="container-custom section-padding relative z-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
             {/* Left: Text Content */}
-            <div className="text-center lg:text-left">
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="text-center lg:text-left"
+            >
+              {/* Nom avec animation stagger */}
+              <motion.h1
+                variants={itemVariants}
+                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-3 sm:mb-4 leading-tight"
+              >
+                <span className="text-dark-900 block">Mamadou</span>
+                <span className="gradient-text block">Ndiaye</span>
+              </motion.h1>
+
+              {/* Titre professionnel avec badge */}
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
+                variants={itemVariants}
+                className="flex flex-wrap items-center justify-center lg:justify-start gap-3 mb-4 sm:mb-6"
               >
-            <motion.h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 px-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-            >
-              <span className="text-dark-900">Bonjour, je suis </span>
-              <span className="gradient-text">Mamadou Ndiaye</span>
-            </motion.h1>
-
-            <motion.p
-              className="text-lg sm:text-xl md:text-2xl text-dark-600 mb-3 sm:mb-4 font-medium px-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-            >
-              Développeur Full-Stack JavaScript
-            </motion.p>
-
-            <motion.p
-              className="text-base sm:text-lg text-dark-500 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed px-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-            >
-              Je construis des solutions web modernes et intuitives qui résolvent
-              de vrais problèmes. Passionné par le code de qualité et l&apos;expérience
-              utilisateur, je transforme les idées en produits numériques performants.
-            </motion.p>
-
-            {/* Highlights */}
-            <motion.div
-              className="flex flex-wrap justify-center lg:justify-start gap-4 sm:gap-6 mb-8 sm:mb-12"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.6 }}
-            >
-              {highlights.map((highlight, index) => (
-                <motion.div
-                  key={index}
-                  className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm"
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.9 + index * 0.1 }}
-                >
-                  <highlight.icon className="w-4 h-4 text-primary-600" />
-                  <span className="text-sm font-medium text-dark-700">
-                    {highlight.text}
-                  </span>
-                </motion.div>
-              ))}
-            </motion.div>
-
-            {/* CTA Buttons */}
-            <motion.div
-              className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start px-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1, duration: 0.6 }}
-            >
-              <motion.button
-                onClick={scrollToProjects}
-                className="px-6 sm:px-8 py-3 sm:py-4 bg-primary-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all text-sm sm:text-base"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Découvrir mes projets
-              </motion.button>
-              <motion.a
-                href="#contact"
-                className="px-6 sm:px-8 py-3 sm:py-4 bg-white text-primary-600 border-2 border-primary-600 rounded-lg font-semibold hover:bg-primary-50 transition-all text-sm sm:text-base text-center"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Me contacter
-              </motion.a>
-              <motion.a
-                href="https://drive.google.com/uc?export=download&id=1X3xTR6LjGTbHd1PpngUsspGHaehx2u0I"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-6 sm:px-8 py-3 sm:py-4 bg-dark-900 text-white rounded-lg font-semibold hover:bg-dark-800 transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Download className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="hidden sm:inline">Télécharger CV</span>
-                <span className="sm:hidden">CV</span>
-              </motion.a>
-            </motion.div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-dark-800">
+                  Développeur Full-Stack JavaScript
+                </h2>
+                <span className="px-3 py-1 bg-primary-600 text-white text-xs sm:text-sm font-bold rounded-full">
+                  VERIFIED
+                </span>
               </motion.div>
-            </div>
 
-            {/* Right: Photo */}
+              {/* Sous-titre impactant - Renforcé */}
+              <motion.p
+                variants={itemVariants}
+                className="text-lg sm:text-xl md:text-2xl text-dark-700 mb-4 sm:mb-6 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium"
+              >
+                Applications web modernes, fiables et orientées{" "}
+                <span className="font-bold text-primary-600 relative">
+                  solutions réelles
+                  <motion.span
+                    className="absolute -bottom-1 left-0 right-0 h-1 bg-primary-400 rounded-full"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ delay: 1, duration: 0.5 }}
+                  />
+                </span>
+                .
+              </motion.p>
+
+              {/* Proof points - Nouveaux pour crédibilité recruteur */}
+              <motion.div
+                variants={itemVariants}
+                className="flex flex-wrap items-center justify-center lg:justify-start gap-3 mb-6 sm:mb-8"
+              >
+                {proofPoints.map((point, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{
+                      delay: 0.8 + index * 0.1,
+                      duration: 0.5,
+                      type: "spring",
+                      stiffness: 200,
+                    }}
+                    className={`flex items-center gap-2 px-3 py-1.5 ${point.bg} rounded-full border border-current/20`}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                  >
+                    <point.icon className={`w-4 h-4 ${point.color}`} />
+                    <span className={`text-xs sm:text-sm font-semibold ${point.color}`}>
+                      {point.text}
+                    </span>
+                  </motion.div>
+                ))}
+              </motion.div>
+
+              {/* Micro-valeur : Stack technique */}
+              <motion.div
+                variants={itemVariants}
+                className="flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4 mb-8 sm:mb-12"
+              >
+                <span className="text-sm sm:text-base text-dark-500 font-medium">
+                  Stack :
+                </span>
+                {techStack.map((tech, index) => (
+                  <motion.span
+                    key={tech}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{
+                      delay: 1.1 + index * 0.1,
+                      duration: 0.5,
+                      type: "spring",
+                      stiffness: 200,
+                    }}
+                    className="px-4 py-2 bg-white/90 backdrop-blur-sm border border-primary-200 rounded-full text-sm sm:text-base font-semibold text-primary-700 shadow-sm hover:shadow-md transition-all"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                  >
+                    {tech}
+                  </motion.span>
+                ))}
+              </motion.div>
+
+              {/* CTA Buttons - Ultra-renforcés pour recruteurs */}
+              <motion.div
+                variants={itemVariants}
+                className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+              >
+                <motion.button
+                  onClick={scrollToProjects}
+                  className="group relative px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl font-bold shadow-xl hover:shadow-2xl transition-all text-base sm:text-lg overflow-hidden"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {/* Shine effect */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    initial={{ x: "-100%" }}
+                    whileHover={{ x: "100%" }}
+                    transition={{ duration: 0.6 }}
+                  />
+                  
+                  <span className="relative z-10 flex items-center gap-2">
+                    Voir mes projets
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </motion.button>
+
+                <motion.button
+                  onClick={scrollToContact}
+                  className="group relative px-8 py-4 bg-white text-primary-600 border-2 border-primary-600 rounded-xl font-bold hover:bg-primary-50 transition-all text-base sm:text-lg shadow-lg hover:shadow-xl overflow-hidden"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {/* Badge "Recrutement" */}
+                  <span className="absolute -top-2 -right-2 px-2 py-0.5 bg-primary-600 text-white text-xs font-bold rounded-full shadow-lg">
+                    RECRUTEMENT
+                  </span>
+                  
+                  <span className="relative z-10">Me contacter</span>
+                </motion.button>
+              </motion.div>
+            </motion.div>
+
+            {/* Right: Photo - Renforcé */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-              className="flex justify-center lg:justify-end"
+              initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ delay: 0.3, duration: 1, ease: [0.2, 0.8, 0.2, 1] }}
+              className="flex justify-center lg:justify-end relative"
             >
               <div className="relative">
-                {/* Glow effect */}
+                {/* Glow effect renforcé */}
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 rounded-full blur-3xl opacity-30"
+                  className="absolute inset-0 bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 rounded-full blur-3xl opacity-40"
                   animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.3, 0.5, 0.3],
+                    scale: [1, 1.3, 1],
+                    opacity: [0.4, 0.6, 0.4],
                   }}
                   transition={{
-                    duration: 3,
+                    duration: 4,
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
@@ -185,58 +287,98 @@ export default function Hero() {
 
                 {/* Floating animation container */}
                 <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
                   animate={{
-                    y: [0, -20, 0],
-                    rotate: [0, 2, -2, 0],
+                    opacity: 1,
+                    scale: 1,
+                    y: [0, -25, 0],
+                    rotate: [0, 3, -3, 0],
                   }}
                   transition={{
-                    duration: 6,
-                    repeat: Infinity,
-                    ease: "easeInOut",
+                    opacity: { duration: 1, delay: 0.3 },
+                    scale: { duration: 1, delay: 0.3, ease: "easeOut" },
+                    y: { duration: 7, repeat: Infinity, ease: "easeInOut" },
+                    rotate: { duration: 7, repeat: Infinity, ease: "easeInOut" },
                   }}
                   className="relative z-10"
                 >
                   {/* Photo frame with gradient border */}
-                  <div className="relative p-2 bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 rounded-full">
-                    <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full overflow-hidden bg-white p-1">
-                      <div className="w-full h-full rounded-full overflow-hidden bg-gradient-to-br from-primary-100 to-primary-200 relative">
+                  <div className="relative p-2.5 bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 rounded-full shadow-2xl">
+                    {/* Inner white circle with photo */}
+                    <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 rounded-full overflow-hidden bg-white p-1.5 shadow-inner">
+                      <div className="w-full h-full rounded-full overflow-hidden relative">
+                        {/* Subtle inner shadow for depth */}
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-b from-black/5 to-transparent z-10 pointer-events-none" />
+                        
+                        {/* Profile photo */}
                         <Image
-                          src="https://media.licdn.com/dms/image/v2/D4E03AQHHS8Ht1JT-hA/profile-displayphoto-shrink_800_800/B4EZR6y0sqHgAg-/0/1737226932101?e=1767225600&v=beta&t=pq30ebIWdQQxd7A3_iz7Pscy520d3kg7FS9ykmpZ1SU"
-                          alt="Mamadou Ndiaye"
+                          src="https://media.licdn.com/dms/image/v2/D4E03AQHHS8Ht1JT-hA/profile-displayphoto-shrink_800_800/B4EZR6y0sqHgAg-/0/1737226932101?e=1769040000&v=beta&t=F2Sp91G9NYUO78audNONO4EJlmbbUikkqguoGIhgzOM"
+                          alt="Photo de Mamadou Ndiaye, développeur full-stack JavaScript"
                           fill
-                          className="object-cover"
-                          sizes="(max-width: 640px) 256px, 320px"
+                          className="object-cover object-center rounded-full"
+                          sizes="(max-width: 640px) 256px, (max-width: 768px) 320px, 384px"
+                          priority
                           unoptimized
                         />
+                        
+                        {/* Subtle halo effect */}
+                        <div className="absolute inset-0 rounded-full ring-2 ring-white/30 z-10 pointer-events-none" />
                       </div>
                     </div>
 
-                    {/* Decorative circles */}
+                    {/* Decorative elements - Renforcés */}
                     <motion.div
-                      className="absolute -top-4 -right-4 w-16 h-16 bg-primary-300 rounded-full opacity-60"
+                      className="absolute -top-3 -right-3 sm:-top-6 sm:-right-6 w-12 h-12 sm:w-20 sm:h-20 bg-primary-300 rounded-full opacity-70 shadow-xl"
                       animate={{
-                        scale: [1, 1.2, 1],
-                        opacity: [0.6, 0.8, 0.6],
+                        scale: [1, 1.3, 1],
+                        opacity: [0.7, 0.9, 0.7],
+                        rotate: [0, 180, 360],
                       }}
                       transition={{
-                        duration: 2,
+                        duration: 3,
                         repeat: Infinity,
                         ease: "easeInOut",
                       }}
                     />
                     <motion.div
-                      className="absolute -bottom-4 -left-4 w-12 h-12 bg-primary-400 rounded-full opacity-60"
+                      className="absolute -bottom-3 -left-3 sm:-bottom-6 sm:-left-6 w-10 h-10 sm:w-16 sm:h-16 bg-primary-400 rounded-full opacity-70 shadow-xl"
                       animate={{
-                        scale: [1, 1.3, 1],
-                        opacity: [0.6, 0.9, 0.6],
+                        scale: [1, 1.4, 1],
+                        opacity: [0.7, 1, 0.7],
+                        rotate: [0, -180, -360],
                       }}
                       transition={{
-                        duration: 2.5,
+                        duration: 3.5,
                         repeat: Infinity,
                         ease: "easeInOut",
                         delay: 0.5,
                       }}
                     />
+                    
+                    {/* Sparkles décoratifs */}
+                    {[...Array(3)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className="absolute"
+                        style={{
+                          top: `${20 + i * 30}%`,
+                          left: i % 2 === 0 ? "-10%" : "110%",
+                        }}
+                        animate={{
+                          scale: [0, 1, 0],
+                          opacity: [0, 1, 0],
+                          rotate: [0, 180, 360],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          delay: i * 0.7,
+                        }}
+                      >
+                        <Sparkles className="w-4 h-4 text-primary-500" />
+                      </motion.div>
+                    ))}
                   </div>
                 </motion.div>
               </div>
@@ -244,26 +386,30 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Scroll indicator */}
+        {/* Scroll indicator - Amélioré */}
         <motion.div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 0.6 }}
+          className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-20"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.5, duration: 0.8 }}
         >
           <motion.button
             onClick={scrollToProjects}
             aria-label="Scroll to projects"
-            className="flex flex-col items-center gap-2 text-dark-400 hover:text-primary-600 transition-colors"
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
+            className="flex flex-col items-center gap-1 sm:gap-2 text-dark-400 hover:text-primary-600 transition-colors group"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <span className="text-sm font-medium">Découvrir</span>
-            <ArrowDown className="w-5 h-5" />
+            <span className="text-xs sm:text-sm font-medium">Découvrir</span>
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+            >
+              <ArrowDown className="w-4 h-4 sm:w-5 sm:h-5 group-hover:text-primary-600" />
+            </motion.div>
           </motion.button>
         </motion.div>
       </div>
     </section>
   );
 }
-

@@ -26,3 +26,4 @@ Si vous n'ajoutez pas de photo, un monogramme "MN" avec un gradient sera affich√
 - Optimisez l'image avant de l'ajouter (utilisez des outils comme TinyPNG ou Squoosh)
 
 
+

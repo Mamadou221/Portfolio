@@ -15,6 +15,18 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'media.licdn.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'www.tsi-senegal.sn',
+      },
+      {
+        protocol: 'https',
+        hostname: 'scontent.fdkr6-1.fna.fbcdn.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'portsetcorridors.com',
+      },
     ],
   },
 };
