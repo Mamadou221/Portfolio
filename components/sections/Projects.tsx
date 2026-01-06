@@ -216,13 +216,14 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
               href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-3 rounded-xl font-semibold text-xs sm:text-sm transition-all bg-gradient-to-r ${colors.gradient} text-white shadow-lg hover:shadow-xl`}
+              className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-3 rounded-xl font-semibold text-xs sm:text-sm transition-all bg-gradient-to-r ${colors.gradient} text-white shadow-lg hover:shadow-xl touch-manipulation relative z-10`}
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.5 }}
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
               <Github className="w-4 h-4" />
               <span>Code</span>
@@ -231,13 +232,14 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
               href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-3 rounded-xl font-semibold text-xs sm:text-sm transition-all bg-dark-900 text-white hover:bg-dark-800 shadow-lg"
+              className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-3 rounded-xl font-semibold text-xs sm:text-sm transition-all bg-dark-900 text-white hover:bg-dark-800 shadow-lg touch-manipulation relative z-10"
               whileHover={{ scale: 1.05, y: -2, x: 2 }}
               whileTap={{ scale: 0.95 }}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.55 }}
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
               <span>Voir</span>
               <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -330,7 +332,7 @@ export default function Projects() {
               <motion.button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-medium text-xs sm:text-sm transition-all ${
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-medium text-xs sm:text-sm transition-all touch-manipulation relative z-10 ${
                   selectedCategory === category
                     ? `bg-gradient-to-r ${categoryColors[category === "all" ? "fullstack" : category].gradient} text-white shadow-lg`
                     : "bg-white text-dark-700 hover:bg-dark-100 border border-dark-200"
@@ -340,6 +342,7 @@ export default function Projects() {
                 animate={{
                   scale: selectedCategory === category ? 1.05 : 1,
                 }}
+                style={{ WebkitTapHighlightColor: "transparent" }}
               >
                 {category === "all" ? "Tous" : categoryLabels[category]}
               </motion.button>

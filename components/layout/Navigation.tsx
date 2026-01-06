@@ -1,14 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useScroll, useMotionValueEvent, useTransform } from "framer-motion";
-import { Menu, X, Download, Mail, CheckCircle2 } from "lucide-react";
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
+import { Menu, X } from "lucide-react";
 
 const navItems = [
   { label: "Accueil", href: "#hero" },
-  { label: "À propos", href: "#about" },
   { label: "Projets", href: "#projects" },
-  { label: "Expérience", href: "#experience" },
   { label: "Compétences", href: "#skills" },
   { label: "Contact", href: "#contact" },
 ];
@@ -20,15 +18,12 @@ export default function Navigation() {
   const { scrollY, scrollYProgress } = useScroll();
   const navRef = useRef<HTMLElement>(null);
 
-  // Barre de progression du scroll
-  const scrollProgress = useTransform(scrollYProgress, [0, 1], [0, 100]);
-
   // Détection du scroll pour changer l'apparence
   useMotionValueEvent(scrollY, "change", (latest) => {
     setIsScrolled(latest > 50);
   });
 
-  // Détection améliorée de la section active (algorithme plus précis)
+  // Détection de la section active
   useEffect(() => {
     const handleScroll = () => {
       const sections = navItems.map((item) => {
@@ -36,9 +31,8 @@ export default function Navigation() {
         return { href: item.href, element };
       });
 
-      // Trouver la section la plus proche du haut de la fenêtre
       let current: string | null = null;
-      const scrollPosition = window.scrollY + 150; // Offset pour le header
+      const scrollPosition = window.scrollY + 150;
 
       for (let i = sections.length - 1; i >= 0; i--) {
         const { href, element } = sections[i];
@@ -53,7 +47,6 @@ export default function Navigation() {
         }
       }
 
-      // Si on est en haut, la section hero est active
       if (window.scrollY < 100) {
         current = "#hero";
       }
@@ -61,7 +54,6 @@ export default function Navigation() {
       if (current) setActiveSection(current);
     };
 
-    // Throttle pour performance
     let ticking = false;
     const throttledScroll = () => {
       if (!ticking) {
@@ -74,36 +66,25 @@ export default function Navigation() {
     };
 
     window.addEventListener("scroll", throttledScroll, { passive: true });
-    handleScroll(); // Appel initial
+    handleScroll();
     
     return () => window.removeEventListener("scroll", throttledScroll);
   }, []);
 
-  // Smooth scroll avec offset pour éviter que le header cache le contenu
-  const handleNavClick = (href: string) => {
-    setIsMobileMenuOpen(false);
-    const element = document.querySelector(href);
-    if (element) {
-      const headerHeight = navRef.current?.offsetHeight || 80;
-      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-      const offsetPosition = elementPosition - headerHeight - 20;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const scrollToContact = (e?: React.MouseEvent) => {
+  // Handler unifié pour la navigation (mobile et desktop) - Garantit le fonctionnement
+  const handleNavClick = (href: string, e?: React.MouseEvent) => {
+    // Empêcher le comportement par défaut et la propagation
     if (e) {
       e.preventDefault();
+      e.stopPropagation();
     }
+    
+    // Fermer le menu mobile immédiatement (sans délai)
     setIsMobileMenuOpen(false);
     
-    // Attendre un peu pour que le menu mobile se ferme si nécessaire
-    setTimeout(() => {
-      const element = document.querySelector("#contact");
+    // Scroll vers la section - délai minimal pour laisser React mettre à jour l'état
+    requestAnimationFrame(() => {
+      const element = document.querySelector(href);
       if (element) {
         const headerHeight = navRef.current?.offsetHeight || 80;
         const elementPosition = element.getBoundingClientRect().top + window.scrollY;
@@ -114,13 +95,102 @@ export default function Navigation() {
           behavior: "smooth",
         });
       } else {
-        // Fallback : scroll vers le bas de la page
-        window.scrollTo({
-          top: document.documentElement.scrollHeight,
-          behavior: "smooth",
-        });
+        // Fallback : si l'élément n'est pas trouvé, essayer un scroll simple
+        console.warn(`Section ${href} not found, attempting direct scroll`);
+        const hash = href.replace('#', '');
+        const fallbackElement = document.getElementById(hash);
+        if (fallbackElement) {
+          fallbackElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
       }
-    }, 100);
+    });
+  };
+
+  // Composant de lien réutilisable (mobile et desktop)
+  const NavLink = ({ item, index, isMobile = false }: { item: typeof navItems[0]; index: number; isMobile?: boolean }) => {
+    const isActive = activeSection === item.href;
+    
+    const linkContent = (
+      <>
+        {item.label}
+        {!isMobile && isActive && (
+          <motion.span
+            className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600 rounded-full"
+            layoutId="activeSection"
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          />
+        )}
+      </>
+    );
+
+    if (isMobile) {
+      return (
+        <motion.li
+          key={item.href}
+          variants={{
+            open: {
+              opacity: 1,
+              x: 0,
+              transition: { duration: 0.3 },
+            },
+            closed: {
+              opacity: 0,
+              x: -20,
+              transition: { duration: 0.2 },
+            },
+          }}
+          style={{ pointerEvents: "auto" }}
+        >
+          <a
+            href={item.href}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleNavClick(item.href, e);
+            }}
+            onTouchStart={(e) => {
+              // Assurer que le touch event fonctionne
+              e.stopPropagation();
+            }}
+            className={`block px-4 py-2.5 rounded-lg font-medium transition-colors touch-manipulation cursor-pointer ${
+              isActive
+                ? "bg-primary-50 text-primary-600"
+                : "text-dark-700 hover:text-primary-600 hover:bg-primary-50 active:bg-primary-100"
+            }`}
+            style={{ 
+              WebkitTapHighlightColor: "transparent",
+              pointerEvents: "auto",
+              position: "relative",
+              zIndex: 100,
+              userSelect: "none",
+            }}
+            role="button"
+            aria-label={`Aller à la section ${item.label}`}
+          >
+            {linkContent}
+          </a>
+        </motion.li>
+      );
+    }
+
+    return (
+      <li key={item.href}>
+        <motion.a
+          href={item.href}
+          onClick={(e) => handleNavClick(item.href, e)}
+          className={`relative px-4 py-2 text-sm font-medium transition-colors ${
+            isActive
+              ? "text-primary-600"
+              : "text-dark-700 hover:text-primary-600"
+          }`}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.05 + 0.2, duration: 0.3 }}
+        >
+          {linkContent}
+        </motion.a>
+      </li>
+    );
   };
 
   return (
@@ -132,9 +202,7 @@ export default function Navigation() {
       >
         <motion.div
           className="h-full bg-gradient-to-r from-primary-500 via-primary-600 to-primary-500"
-          style={{
-            width: "100%",
-          }}
+          style={{ width: "100%" }}
         />
       </motion.div>
 
@@ -145,195 +213,41 @@ export default function Navigation() {
         transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-white/95 backdrop-blur-lg shadow-lg py-3"
-            : "bg-transparent py-4"
+            ? "bg-white/95 backdrop-blur-lg shadow-md py-2"
+            : "bg-transparent py-2"
         }`}
-        style={{ top: isScrolled ? "4px" : "0" }}
       >
         <div className="container-custom px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
-            {/* Branding - À gauche avec glow effect */}
+            {/* Branding */}
             <motion.a
               href="#hero"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavClick("#hero");
-              }}
-              className="flex items-center gap-1.5 sm:gap-2 group relative"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              onClick={(e) => handleNavClick("#hero", e)}
+              className="text-lg sm:text-xl font-bold gradient-text touch-manipulation"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
-              {/* Glow effect subtil */}
-              <motion.div
-                className="absolute -inset-1 sm:-inset-2 bg-primary-400/20 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                animate={{
-                  scale: [1, 1.1, 1],
-                  opacity: [0, 0.3, 0],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
-              
-              <div className="flex items-center gap-1.5 sm:gap-2 relative z-10">
-                <span className="text-lg sm:text-xl md:text-2xl font-bold gradient-text">
-                  Mamadou Ndiaye
-                </span>
-                {/* Indicateur animé amélioré */}
-                <motion.div
-                  className="relative"
-                  animate={{
-                    scale: [1, 1.1, 1],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                >
-                  <motion.div
-                    className="w-2 h-2 bg-primary-500 rounded-full"
-                    animate={{
-                      opacity: [1, 0.7, 1],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  />
-                  {/* Glow autour du point */}
-                  <motion.div
-                    className="absolute inset-0 w-2 h-2 bg-primary-400 rounded-full blur-sm"
-                    animate={{
-                      opacity: [0.5, 0.8, 0.5],
-                      scale: [1, 1.5, 1],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  />
-                </motion.div>
-              </div>
+              Mamadou Ndiaye
             </motion.a>
 
-            {/* Desktop Navigation - À droite */}
-            <div className="hidden md:flex items-center gap-6">
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center">
               <ul className="flex items-center gap-1">
-                {navItems.map((item, index) => {
-                  const isActive = activeSection === item.href;
-                  return (
-                    <li key={item.href}>
-                      <motion.a
-                        href={item.href}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleNavClick(item.href);
-                        }}
-                        className={`relative px-4 py-2 text-sm font-medium transition-all group ${
-                          isActive
-                            ? "text-primary-600"
-                            : "text-dark-700 hover:text-primary-600"
-                        }`}
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 + 0.3, duration: 0.4 }}
-                        whileHover={{ y: -2 }}
-                      >
-                        {item.label}
-                        {/* Soulignement animé au hover */}
-                        <motion.span
-                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600 rounded-full"
-                          initial={{ scaleX: 0 }}
-                          whileHover={{ scaleX: 1 }}
-                          transition={{ duration: 0.3, ease: "easeOut" }}
-                        />
-                        {/* Indicateur de section active amélioré */}
-                        {isActive && (
-                          <motion.span
-                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-500 via-primary-600 to-primary-500 rounded-full"
-                            layoutId="activeSection"
-                            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                            style={{
-                              boxShadow: "0 0 8px rgba(59, 130, 246, 0.5)",
-                            }}
-                          />
-                        )}
-                      </motion.a>
-                    </li>
-                  );
-                })}
+                {navItems.map((item, index) => (
+                  <NavLink key={item.href} item={item} index={index} />
+                ))}
               </ul>
-
-              {/* Badge de crédibilité "Disponible" */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: navItems.length * 0.05 + 0.3, duration: 0.4 }}
-                className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-full"
-              >
-                <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
-                <span className="text-xs font-semibold text-green-700">Disponible</span>
-              </motion.div>
-
-              {/* CTA - Me contacter (discret) */}
-              <motion.button
-                onClick={(e) => scrollToContact(e)}
-                type="button"
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 border border-primary-300 rounded-lg hover:bg-primary-50 transition-all relative overflow-hidden group"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: navItems.length * 0.05 + 0.4, duration: 0.4 }}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {/* Shine effect au hover */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                  initial={{ x: "-100%" }}
-                  whileHover={{ x: "100%" }}
-                  transition={{ duration: 0.6 }}
-                />
-                <Mail className="w-4 h-4 relative z-10" />
-                <span className="hidden lg:inline relative z-10">Me contacter</span>
-                <span className="lg:hidden relative z-10">Contact</span>
-              </motion.button>
-
-              {/* Bouton CV (discret) */}
-              <motion.a
-                href="https://drive.google.com/uc?export=download&id=1X3xTR6LjGTbHd1PpngUsspGHaehx2u0I"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-3 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-all text-sm shadow-sm hover:shadow-md relative overflow-hidden group"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: navItems.length * 0.05 + 0.5, duration: 0.4 }}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {/* Shine effect au hover */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                  initial={{ x: "-100%" }}
-                  whileHover={{ x: "100%" }}
-                  transition={{ duration: 0.6 }}
-                />
-                <Download className="w-4 h-4 relative z-10" />
-                <span className="hidden xl:inline relative z-10">Télécharger CV</span>
-                <span className="xl:hidden relative z-10">CV</span>
-              </motion.a>
             </div>
 
             {/* Mobile Menu Button */}
             <motion.button
-              className="md:hidden p-2 text-dark-700 rounded-lg hover:bg-dark-100 transition-colors relative z-10"
+              className="md:hidden p-2 text-dark-700 rounded-lg hover:bg-dark-100 transition-colors relative z-[70] touch-manipulation"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle menu"
+              aria-expanded={isMobileMenuOpen}
               whileTap={{ scale: 0.95 }}
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
               <AnimatePresence mode="wait">
                 {isMobileMenuOpen ? (
@@ -362,139 +276,51 @@ export default function Navigation() {
           </div>
         </div>
 
-        {/* Mobile Menu - Amélioré */}
+        {/* Mobile Menu */}
         <AnimatePresence>
           {isMobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="md:hidden bg-white/95 backdrop-blur-lg border-t border-dark-200 shadow-lg overflow-hidden"
-            >
-              <motion.ul
-                initial="closed"
-                animate="open"
-                variants={{
-                  open: {
-                    transition: { staggerChildren: 0.05, delayChildren: 0.1 },
-                  },
-                  closed: {
-                    transition: { staggerChildren: 0.05, staggerDirection: -1 },
-                  },
-                }}
-                className="container-custom py-4 space-y-1"
+            <>
+              {/* Overlay pour fermer le menu */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60] md:hidden"
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
+              
+              {/* Menu mobile - Garanti 100% cliquable */}
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="md:hidden bg-white/95 backdrop-blur-lg border-t border-dark-200 shadow-lg overflow-hidden relative z-[70]"
+                style={{ pointerEvents: "auto" }}
+                onClick={(e) => e.stopPropagation()}
               >
-                {navItems.map((item, index) => {
-                  const isActive = activeSection === item.href;
-                  return (
-                    <motion.li
-                      key={item.href}
-                      variants={{
-                        open: {
-                          opacity: 1,
-                          x: 0,
-                          transition: { duration: 0.3 },
-                        },
-                        closed: {
-                          opacity: 0,
-                          x: -20,
-                          transition: { duration: 0.2 },
-                        },
-                      }}
-                    >
-                      <a
-                        href={item.href}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleNavClick(item.href);
-                        }}
-                        className={`block px-4 py-3 rounded-lg font-medium transition-all ${
-                          isActive
-                            ? "bg-primary-50 text-primary-600 border-l-4 border-primary-600 shadow-sm"
-                            : "text-dark-700 hover:text-primary-600 hover:bg-primary-50"
-                        }`}
-                      >
-                        {item.label}
-                      </a>
-                    </motion.li>
-                  );
-                })}
-              
-                {/* Badge Disponible Mobile */}
-                <motion.li
+                <motion.ul
+                  initial="closed"
+                  animate="open"
                   variants={{
                     open: {
-                      opacity: 1,
-                      x: 0,
-                      transition: { duration: 0.3, delay: navItems.length * 0.05 },
+                      transition: { staggerChildren: 0.05, delayChildren: 0.1 },
                     },
                     closed: {
-                      opacity: 0,
-                      x: -20,
-                      transition: { duration: 0.2 },
+                      transition: { staggerChildren: 0.05, staggerDirection: -1 },
                     },
                   }}
-                  className="px-4 py-2"
+                  className="container-custom py-4 space-y-1"
+                  style={{ pointerEvents: "auto" }}
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-full w-fit">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
-                    <span className="text-xs font-semibold text-green-700">Disponible pour recrutement</span>
-                  </div>
-                </motion.li>
-              
-                {/* CTA Mobile */}
-                <motion.li
-                  variants={{
-                    open: {
-                      opacity: 1,
-                      x: 0,
-                      transition: { duration: 0.3, delay: (navItems.length + 1) * 0.05 },
-                    },
-                    closed: {
-                      opacity: 0,
-                      x: -20,
-                      transition: { duration: 0.2 },
-                    },
-                  }}
-                  className="pt-2 border-t border-dark-200"
-                >
-                  <div className="flex flex-col gap-2 px-4">
-                    <motion.button
-                      onClick={(e) => scrollToContact(e)}
-                      type="button"
-                      className="flex items-center justify-center gap-2 px-4 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-all relative overflow-hidden group"
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                        initial={{ x: "-100%" }}
-                        whileHover={{ x: "100%" }}
-                        transition={{ duration: 0.6 }}
-                      />
-                      <Mail className="w-4 h-4 relative z-10" />
-                      <span className="relative z-10">Me contacter</span>
-                    </motion.button>
-                    <motion.a
-                      href="https://drive.google.com/uc?export=download&id=1X3xTR6LjGTbHd1PpngUsspGHaehx2u0I"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 px-4 py-3 bg-white text-primary-600 border-2 border-primary-600 rounded-lg font-medium hover:bg-primary-50 transition-all relative overflow-hidden group"
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-primary-50/40 to-transparent"
-                        initial={{ x: "-100%" }}
-                        whileHover={{ x: "100%" }}
-                        transition={{ duration: 0.6 }}
-                      />
-                      <Download className="w-4 h-4 relative z-10" />
-                      <span className="relative z-10">Télécharger CV</span>
-                    </motion.a>
-                  </div>
-                </motion.li>
-              </motion.ul>
-            </motion.div>
+                  {navItems.map((item, index) => (
+                    <NavLink key={item.href} item={item} index={index} isMobile={true} />
+                  ))}
+                </motion.ul>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
       </motion.nav>

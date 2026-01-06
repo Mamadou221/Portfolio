@@ -243,3 +243,4 @@ Le **header (navigation)** a été transformé en une interface élégante, mode
 **🎉 Le header est maintenant élégant, moderne et animé, optimisé pour une navigation fluide et professionnelle !**
 
 
+

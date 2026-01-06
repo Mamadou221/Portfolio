@@ -193,3 +193,4 @@ export const techIconsMap: Record<string, TechIcon> = {
 - Si abandon → Simplifier encore plus
 
 
+

@@ -289,3 +289,4 @@ whileHover: { x: "100%" }
 **🎉 La section Hero est maintenant spectaculaire, moderne et mémorable, optimisée pour une première impression forte en 3 secondes !**
 
 
+

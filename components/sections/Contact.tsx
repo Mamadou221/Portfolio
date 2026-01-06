@@ -225,13 +225,14 @@ export default function Contact() {
                   href={link.href}
                   target={link.href.startsWith("http") ? "_blank" : undefined}
                   rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                  className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border-2 ${link.borderColor} ${link.bgColor} ${link.hoverBg} transition-all group relative overflow-hidden`}
+                  className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border-2 ${link.borderColor} ${link.bgColor} ${link.hoverBg} transition-all group relative overflow-hidden touch-manipulation z-10`}
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
                   whileHover={{ scale: 1.02, x: 5 }}
                   whileTap={{ scale: 0.98 }}
+                  style={{ WebkitTapHighlightColor: "transparent" }}
                 >
                   {/* Badge "Recommandé" pour LinkedIn */}
                   {link.label === "LinkedIn" && (
@@ -263,13 +264,14 @@ export default function Contact() {
                       href={link.href}
                       target={link.href.startsWith("http") ? "_blank" : undefined}
                       rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                      className={`flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-lg border ${link.borderColor} ${link.bgColor} ${link.hoverBg} transition-all group`}
+                      className={`flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-lg border ${link.borderColor} ${link.bgColor} ${link.hoverBg} transition-all group touch-manipulation relative z-10`}
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.7 + index * 0.1, duration: 0.5 }}
                       whileHover={{ scale: 1.01, x: 3 }}
                       whileTap={{ scale: 0.98 }}
+                      style={{ WebkitTapHighlightColor: "transparent" }}
                     >
                       <link.icon className={`w-4 h-4 ${link.color} flex-shrink-0`} />
                       <span className="text-xs sm:text-sm font-medium text-dark-700">{link.text}</span>
@@ -393,9 +395,10 @@ export default function Contact() {
                     <motion.button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 relative overflow-hidden group"
+                      className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 relative overflow-hidden group touch-manipulation z-50"
                       whileHover={{ scale: isSubmitting ? 1 : 1.02, y: -2 }}
                       whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+                      style={{ WebkitTapHighlightColor: "transparent" }}
                     >
                       {/* Shine effect */}
                       <motion.div

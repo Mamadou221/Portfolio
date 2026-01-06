@@ -196,3 +196,4 @@ La section **"À propos de moi"** a été renforcée pour créer une **identité
 **🎉 La section "À propos" est maintenant renforcée pour créer une identité personnelle mémorable pour les recruteurs tech seniors !**
 
 
+

@@ -10,10 +10,12 @@
 
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-white text-dark-900;
+    overflow-x: hidden;
   }
 
   * {
